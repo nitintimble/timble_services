@@ -1,43 +1,14 @@
 # Timble Services
 
-Timble Services is a Django project that includes asynchronous and synchronous tasks using Celery and Redis.
+Timble Services -  Django project with asynchronous and synchronous tasks using Celery and Redis.
 
 ## Contents
 
 1. [Prerequisites](#Prerequisites)
 2. [Setup Instructions, Ubuntu](#Setup-Instructions-Ubuntu)
-    - [1. Clone the Repository](#1-Clone-the-Repository)
-    - [2. Create a Virtual Environment](#2-Create-a-Virtual-Environment)
-    - [3. Install Dependencies](#3-Install-Dependencies)
-    - [4. Install Redis](#4-Install-Redis)
-    - [5. Start Redis Server](#5-Start-Redis-Server)
-    - [6. Run Django Server](#6-Run-Django-Server)
-    - [7. Start Celery Worker](#7-Start-Celery-Worker)
 3. [Setup Instructions, Windows](#Setup-Instructions-Windows)
-    - [1. Clone the Repository](#1-Clone-the-Repository-1)
-    - [2. Create a Virtual Environment](#2-Create-a-Virtual-Environment-1)
-    - [3. Install Dependencies](#3-Install-Dependencies-1)
-    - [4. Install Redis](#4-Install-Redis-1)
-    - [5. Start Redis Server](#5-Start-Redis-Server-1)
-    - [6. Run Django Server](#6-Run-Django-Server-1)
-    - [7. Start Celery Worker](#7-Start-Celery-Worker-1)
 4. [Testing Endpoints with Postman](#Testing-Endpoints-with-Postman)
-    - [Synchronous Addition](#Synchronous-Addition)
-    - [Asynchronous Addition](#Asynchronous-Addition)
-    - [Synchronous Multiplication](#Synchronous-Multiplication)
-    - [Asynchronous Multiplication](#Asynchronous-Multiplication)
-    - [Verifying Asynchronous Task Completion](#Verifying-Asynchronous-Task-Completion)
 5. [Adding a New App and Sample Method](#Adding-a-New-App-and-Sample-Method)
-    - [1. Create a New App](#1-Create-a-New-App)
-    - [2. Register the New App](#2-Register-the-New-App)
-    - [3. Create a Synchronous and Asynchronous Task](#3-Create-a-Synchronous-and-Asynchronous-Task)
-    - [4. Create Views for the New Task](#4-Create-Views-for-the-New-Task)
-    - [5. Define URLs for the New App](#5-Define-URLs-for-the-New-App)
-    - [6. Include the New App URLs in the Project URLs](#6-Include-the-New-App-URLs-in-the-Project-URLs)
-    - [Testing the New App with Postman](#Testing-the-New-App-with-Postman)
-        - [Synchronous Addition](#Synchronous-Addition-1)
-        - [Asynchronous Addition](#Asynchronous-Addition-1)
-        - [Verifying Asynchronous Task Completion for New App](#Verifying-Asynchronous-Task-Completion-for-New-App)
 6. [Notes](#Notes)
 
 ## Prerequisites
@@ -288,9 +259,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('msme/', include('msme.urls')),
     path('gst_analytics/', include('gst_analytics.urls')),
-    path('newapp/', include('newapp.urls
-
-')),  # Add this line
+    path('newapp/', include('newapp.urls')),  # Add this line
 ]
 ```
 
@@ -333,7 +302,7 @@ urlpatterns = [
     }
     ```
 
-## Notes
+## important
 
-- Ensure Redis is running before starting Celery workers.
-- Ensure the virtual environment is activated when running Django server and Celery worker.
+- make sure Redis is running before starting Celery workers.
+- activate virtual environment before running Django server & Celery worker.
