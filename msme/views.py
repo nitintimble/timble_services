@@ -15,6 +15,20 @@ def add_numbers_async(request):
         logger.error(f"Error in add_numbers_async: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
+# Function to get the result of an async task
+def get_task_result(request, task_id):
+    try:
+        result = AsyncResult(task_id)
+        response = {
+            'task_id': task_id,
+            'status': result.status,
+            'result': result.result if result.status == 'SUCCESS' else None
+        }
+        return JsonResponse(response)
+    except Exception as e:
+        logger.error(f"Error in get_task_result: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
 # Synchronous view
 def add_numbers_sync(request):
     try:

@@ -1,15 +1,16 @@
 # Timble Services
 
-Timble Services -  Django project with asynchronous and synchronous tasks using Celery and Redis.
+Timble Services is a Django project that includes asynchronous and synchronous tasks using Celery and Redis.
 
 ## Contents
 
-1. [Prerequisites](#Prerequisites)
-2. [Setup Instructions, Ubuntu](#Setup-Instructions-Ubuntu)
-3. [Setup Instructions, Windows](#Setup-Instructions-Windows)
-4. [Testing Endpoints with Postman](#Testing-Endpoints-with-Postman)
-5. [Adding a New App and Sample Method](#Adding-a-New-App-and-Sample-Method)
-6. [Notes](#Notes)
+1. [Prerequisites](#prerequisites)
+2. [Setup Instructions, Ubuntu](#setup-instructions-ubuntu)
+3. [Setup Instructions, Windows](#setup-instructions-windows)
+4. [Testing Endpoints with Postman](#testing-endpoints-with-postman)
+5. [Adding a New App and Sample Method](#adding-a-new-app-and-sample-method)
+6. [Fetching Results of Asynchronous Tasks](#fetching-results-of-asynchronous-tasks)
+7. [Notes](#notes)
 
 ## Prerequisites
 
@@ -129,31 +130,81 @@ celery -A timble_services worker -l info
 
 - **URL:** `http://localhost:8000/msme/add_sync/`
 - **Method:** GET
-- **Parameters:** `x=4`, `y=5`
+- **Parameters:** 
+
+  In Postman, click on the "Params" tab and add the following key-value pairs:
+
+  - **Key:** `x`, **Value:** `4`
+  - **Key:** `y`, **Value:** `5`
+
+  Example:
+
+  ```
+  Key         | Value
+  ----------------------
+  x           | 4
+  y           | 5
+  ```
 
 ### Asynchronous Addition
 
 - **URL:** `http://localhost:8000/msme/add_async/`
 - **Method:** GET
-- **Parameters:** `x=4`, `y=5`
+- **Parameters:** 
+
+  In Postman, click on the "Params" tab and add the following key-value pairs:
+
+  - **Key:** `x`, **Value:** `4`
+  - **Key:** `y`, **Value:** `5`
+
+  Example:
+
+  ```
+  Key         | Value
+  ----------------------
+  x           | 4
+  y           | 5
+  ```
 
 ### Synchronous Multiplication
 
 - **URL:** `http://localhost:8000/gst_analytics/multiply_sync/`
 - **Method:** GET
-- **Parameters:** `x=4`, `y=5`
+- **Parameters:** 
+
+  In Postman, click on the "Params" tab and add the following key-value pairs:
+
+  - **Key:** `x`, **Value:** `4`
+  - **Key:** `y`, **Value:** `5`
+
+  Example:
+
+  ```
+  Key         | Value
+  ----------------------
+  x           | 4
+  y           | 5
+  ```
 
 ### Asynchronous Multiplication
 
 - **URL:** `http://localhost:8000/gst_analytics/multiply_async/`
 - **Method:** GET
-- **Parameters:** `x=4`, `y=5`
+- **Parameters:** 
 
-### Verifying Asynchronous Task Completion
+  In Postman, click on the "Params" tab and add the following key-value pairs:
 
-- **URL:** `http://localhost:8000/msme/task_result/`
-- **Method:** GET
-- **Parameters:** `task_id=<task_id_received_from_async_call>`
+  - **Key:** `x`, **Value:** `4`
+  - **Key:** `y`, **Value:** `5`
+
+  Example:
+
+  ```
+  Key         | Value
+  ----------------------
+  x           | 4
+  y           | 5
+  ```
 
 ## Adding a New App and Sample Method
 
@@ -291,7 +342,7 @@ urlpatterns = [
 
 ### Verifying Asynchronous Task Completion for New App
 
-- **URL:** `http://localhost:8000/msme/task_result/`
+- **URL:** `http://localhost:8000/msme/task_result/<task_id>/`
 - **Method:** GET
 - **Parameters:** `task_id=<task_id_received_from_async_call>`
 - **Response:**
@@ -302,7 +353,35 @@ urlpatterns = [
     }
     ```
 
-## important
+## Fetching Results of Asynchronous Tasks
+
+To fetch the result of any asynchronous task, use the following steps:
+
+### For `msme` App
+
+- **URL:** `http://localhost:8000/msme/task_result/<task_id>/`
+- **Method:** GET
+
+### For `gst_analytics` App
+
+-
+
+ **URL:** `http://localhost:8000/gst_analytics/task_result/<task_id>/`
+- **Method:** GET
+
+Replace `<task_id>` with the actual task ID you received (e.g., `f7337263-8ee9-414b-898a-931b681988c0`).
+
+Example Response:
+
+```json
+{
+    "task_id": "f7337263-8ee9-414b-898a-931b681988c0",
+    "status": "SUCCESS",
+    "result": 9
+}
+```
+
+## Notes
 
 - make sure Redis is running before starting Celery workers.
 - activate virtual environment before running Django server & Celery worker.
