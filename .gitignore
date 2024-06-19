@@ -1,0 +1,28 @@
+# Ignore virtual environment
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Ignore static files
+staticfiles/
+
+# Ignore media files
+media/
+
+# Ignore other stuff
+*.swp
+*.swo
+*.swn
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
