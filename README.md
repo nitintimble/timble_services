@@ -2,6 +2,44 @@
 
 Timble Services is a Django project that includes asynchronous and synchronous tasks using Celery and Redis.
 
+## Contents
+
+1. [Prerequisites](#Prerequisites)
+2. [Setup Instructions, Ubuntu](#Setup-Instructions-Ubuntu)
+    - [1. Clone the Repository](#1-Clone-the-Repository)
+    - [2. Create a Virtual Environment](#2-Create-a-Virtual-Environment)
+    - [3. Install Dependencies](#3-Install-Dependencies)
+    - [4. Install Redis](#4-Install-Redis)
+    - [5. Start Redis Server](#5-Start-Redis-Server)
+    - [6. Run Django Server](#6-Run-Django-Server)
+    - [7. Start Celery Worker](#7-Start-Celery-Worker)
+3. [Setup Instructions, Windows](#Setup-Instructions-Windows)
+    - [1. Clone the Repository](#1-Clone-the-Repository-1)
+    - [2. Create a Virtual Environment](#2-Create-a-Virtual-Environment-1)
+    - [3. Install Dependencies](#3-Install-Dependencies-1)
+    - [4. Install Redis](#4-Install-Redis-1)
+    - [5. Start Redis Server](#5-Start-Redis-Server-1)
+    - [6. Run Django Server](#6-Run-Django-Server-1)
+    - [7. Start Celery Worker](#7-Start-Celery-Worker-1)
+4. [Testing Endpoints with Postman](#Testing-Endpoints-with-Postman)
+    - [Synchronous Addition](#Synchronous-Addition)
+    - [Asynchronous Addition](#Asynchronous-Addition)
+    - [Synchronous Multiplication](#Synchronous-Multiplication)
+    - [Asynchronous Multiplication](#Asynchronous-Multiplication)
+    - [Verifying Asynchronous Task Completion](#Verifying-Asynchronous-Task-Completion)
+5. [Adding a New App and Sample Method](#Adding-a-New-App-and-Sample-Method)
+    - [1. Create a New App](#1-Create-a-New-App)
+    - [2. Register the New App](#2-Register-the-New-App)
+    - [3. Create a Synchronous and Asynchronous Task](#3-Create-a-Synchronous-and-Asynchronous-Task)
+    - [4. Create Views for the New Task](#4-Create-Views-for-the-New-Task)
+    - [5. Define URLs for the New App](#5-Define-URLs-for-the-New-App)
+    - [6. Include the New App URLs in the Project URLs](#6-Include-the-New-App-URLs-in-the-Project-URLs)
+    - [Testing the New App with Postman](#Testing-the-New-App-with-Postman)
+        - [Synchronous Addition](#Synchronous-Addition-1)
+        - [Asynchronous Addition](#Asynchronous-Addition-1)
+        - [Verifying Asynchronous Task Completion for New App](#Verifying-Asynchronous-Task-Completion-for-New-App)
+6. [Notes](#Notes)
+
 ## Prerequisites
 
 - Python 3.6+
@@ -145,6 +183,155 @@ celery -A timble_services worker -l info
 - **URL:** `http://localhost:8000/msme/task_result/`
 - **Method:** GET
 - **Parameters:** `task_id=<task_id_received_from_async_call>`
+
+## Adding a New App and Sample Method
+
+### 1. Create a New App
+
+Run the following command to create a new app:
+
+```bash
+python manage.py startapp newapp
+```
+
+### 2. Register the New App
+
+Add the new app to `INSTALLED_APPS` in `timble_services/settings.py`:
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'msme',
+    'gst_analytics',
+    'newapp',  # Add this line
+]
+```
+
+### 3. Create a Synchronous and Asynchronous Task
+
+#### `newapp/tasks.py`
+
+```python
+from celery import shared_task
+import logging
+
+logger = logging.getLogger(__name__)
+
+@shared_task
+def add(x, y):
+    logger.debug(f"Adding {x} + {y}")
+    return x + y
+```
+
+### 4. Create Views for the New Task
+
+#### `newapp/views.py`
+
+```python
+from django.http import JsonResponse
+from .tasks import add
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Asynchronous view using Celery
+def add_numbers_async(request):
+    try:
+        x = int(request.GET.get('x', 0))
+        y = int(request.GET.get('y', 0))
+        result = add.delay(x, y)  # Asynchronous task
+        return JsonResponse({'task_id': result.id})
+    except Exception as e:
+        logger.error(f"Error in add_numbers_async: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+# Synchronous view
+def add_numbers_sync(request):
+    try:
+        x = int(request.GET.get('x', 0))
+        y = int(request.GET.get('y', 0))
+        result = add(x, y)  # Synchronous task
+        return JsonResponse({'result': result})
+    except Exception as e:
+        logger.error(f"Error in add_numbers_sync: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+```
+
+### 5. Define URLs for the New App
+
+#### `newapp/urls.py`
+
+```python
+from django.urls import path
+from .views import add_numbers_async, add_numbers_sync
+
+urlpatterns = [
+    path('add_async/', add_numbers_async, name='add_numbers_async'),
+    path('add_sync/', add_numbers_sync, name='add_numbers_sync'),
+]
+```
+
+### 6. Include the New App URLs in the Project URLs
+
+#### `timble_services/urls.py`
+
+```python
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('msme/', include('msme.urls')),
+    path('gst_analytics/', include('gst_analytics.urls')),
+    path('newapp/', include('newapp.urls
+
+')),  # Add this line
+]
+```
+
+### Testing the New App with Postman
+
+#### Synchronous Addition
+
+- **URL:** `http://localhost:8000/newapp/add_sync/`
+- **Method:** GET
+- **Parameters:** `x=10`, `y=2`
+- **Response:**
+    ```json
+    {
+        "result": 12
+    }
+    ```
+
+#### Asynchronous Addition
+
+- **URL:** `http://localhost:8000/newapp/add_async/`
+- **Method:** GET
+- **Parameters:** `x=10`, `y=2`
+- **Response:**
+    ```json
+    {
+        "task_id": "some-task-id"
+    }
+    ```
+
+### Verifying Asynchronous Task Completion for New App
+
+- **URL:** `http://localhost:8000/msme/task_result/`
+- **Method:** GET
+- **Parameters:** `task_id=<task_id_received_from_async_call>`
+- **Response:**
+    ```json
+    {
+        "status": "SUCCESS",
+        "result": 12
+    }
+    ```
 
 ## Notes
 
