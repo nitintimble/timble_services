@@ -19,6 +19,52 @@ Timble Services is a Django project that includes asynchronous and synchronous t
 - Redis
 - Celery
 
+## Cloning the Repository and Working with Branches
+
+1. **Clone the Main Branch:**
+   ```sh
+   git clone <repository_url>
+   cd <repository_name>
+   ```
+
+2. **Create and Checkout a New Branch:**
+   ```sh
+   git checkout -b <new_branch_name>
+   ```
+
+3. **Make Changes:**
+   - Make the necessary changes to your files.
+
+4. **Add and Commit Changes:**
+   ```sh
+   git add .
+   git commit -m "Describe your changes"
+   ```
+
+5. **Push the New Branch to the Remote Repository:**
+   ```sh
+   git push origin <new_branch_name>
+   ```
+
+6. **Merge the New Branch into the Main Branch:**
+   - Switch back to the main branch:
+     ```sh
+     git checkout main
+     ```
+   - Pull the latest changes from the remote main branch:
+     ```sh
+     git pull origin main
+     ```
+   - Merge the new branch into the main branch:
+     ```sh
+     git merge <new_branch_name>
+     ```
+   - Push the updated main branch to the remote repository:
+     ```sh
+     git push origin main
+     ```
+
+
 ## Setup Instructions, Ubuntu
 
 ### 1. Clone the Repository

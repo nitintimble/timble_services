@@ -1,41 +1,39 @@
 from django.http import JsonResponse
-from .tasks import add
-import logging
+from .tasks import async_calculate_company_score, sync_calculate_company_score, async_add, sync_add
+from .scorecard import calculate_company_score
+import json
 
-logger = logging.getLogger(__name__)
+# Synchronous views
+def calculate_company_score_sync(request):
+    json_file_path = request.GET.get('json_file_path')
+    result = sync_calculate_company_score(json_file_path)
+    return JsonResponse(result)
 
-# Asynchronous view using Celery
-def add_numbers_async(request):
-    try:
-        x = int(request.GET.get('x', 0))
-        y = int(request.GET.get('y', 0))
-        result = add.delay(x, y)  # Asynchronous task
-        return JsonResponse({'task_id': result.id})
-    except Exception as e:
-        logger.error(f"Error in add_numbers_async: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
-
-# Function to get the result of an async task
-def get_task_result(request, task_id):
-    try:
-        result = AsyncResult(task_id)
-        response = {
-            'task_id': task_id,
-            'status': result.status,
-            'result': result.result if result.status == 'SUCCESS' else None
-        }
-        return JsonResponse(response)
-    except Exception as e:
-        logger.error(f"Error in get_task_result: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
-
-# Synchronous view
 def add_numbers_sync(request):
-    try:
-        x = int(request.GET.get('x', 0))
-        y = int(request.GET.get('y', 0))
-        result = add(x, y)  # Synchronous task
-        return JsonResponse({'result': result})
-    except Exception as e:
-        logger.error(f"Error in add_numbers_sync: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=500)
+    x = int(request.GET.get('x', 0))
+    y = int(request.GET.get('y', 0))
+    result = sync_add(x, y)
+    return JsonResponse({'result': result})
+
+# Asynchronous views
+def calculate_company_score_async(request):
+    json_file_path = request.GET.get('json_file_path')
+    task = async_calculate_company_score.delay(json_file_path)
+    return JsonResponse({'task_id': task.id})
+
+def add_numbers_async(request):
+    x = int(request.GET.get('x', 0))
+    y = int(request.GET.get('y', 0))
+    task = async_add.delay(x, y)
+    return JsonResponse({'task_id': task.id})
+
+# View to get task result
+from celery.result import AsyncResult
+
+def get_task_result(request, task_id):
+    result = AsyncResult(task_id)
+    if result.state == 'SUCCESS':
+        response = result.result
+    else:
+        response = {'state': result.state}
+    return JsonResponse(response)
